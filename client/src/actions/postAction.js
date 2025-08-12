@@ -1,5 +1,31 @@
 import axios from "axios";
-import { CLEAR_ERRORS, DELETE_POST_FAIL, DELETE_POST_REQUEST, DELETE_POST_SUCCESS, LIKE_UNLIKE_POST_FAIL, LIKE_UNLIKE_POST_REQUEST, LIKE_UNLIKE_POST_SUCCESS, NEW_COMMENT_FAIL, NEW_COMMENT_REQUEST, NEW_COMMENT_SUCCESS, NEW_POST_FAIL, NEW_POST_REQUEST, NEW_POST_SUCCESS, POST_DETAILS_FAIL, POST_DETAILS_REQUEST, POST_DETAILS_SUCCESS, POST_FOLLOWING_FAIL, POST_FOLLOWING_REQUEST, POST_FOLLOWING_SUCCESS, SAVE_UNSAVE_POST_FAIL, SAVE_UNSAVE_POST_REQUEST, SAVE_UNSAVE_POST_SUCCESS } from "../constants/postConstants";
+import { 
+    CLEAR_ERRORS, 
+    DELETE_POST_FAIL, 
+    DELETE_POST_REQUEST, 
+    DELETE_POST_SUCCESS, 
+    LIKE_UNLIKE_POST_FAIL, 
+    LIKE_UNLIKE_POST_REQUEST, 
+    LIKE_UNLIKE_POST_SUCCESS, 
+    NEW_COMMENT_FAIL, 
+    NEW_COMMENT_REQUEST, 
+    NEW_COMMENT_SUCCESS, 
+    NEW_POST_FAIL, 
+    NEW_POST_REQUEST, 
+    NEW_POST_SUCCESS, 
+    POST_DETAILS_FAIL, 
+    POST_DETAILS_REQUEST, 
+    POST_DETAILS_SUCCESS, 
+    POST_FOLLOWING_FAIL, 
+    POST_FOLLOWING_REQUEST, 
+    POST_FOLLOWING_SUCCESS, 
+    SAVE_UNSAVE_POST_FAIL, 
+    SAVE_UNSAVE_POST_REQUEST, 
+    SAVE_UNSAVE_POST_SUCCESS,
+    AI_SUGGESTIONS_REQUEST,
+    AI_SUGGESTIONS_SUCCESS,
+    AI_SUGGESTIONS_FAIL
+} from "../constants/postConstants";
 
 
 // New Post
@@ -22,6 +48,73 @@ export const addNewPost = (postData) => async (dispatch) => {
         });
     }
 }
+
+// New Post with AI Enhancement
+export const addNewPostWithAI = (postData) => async (dispatch) => {
+    try {
+
+        dispatch({ type: NEW_POST_REQUEST });
+        const config = { header: { "Content-Type": "application/json" } }
+        const { data } = await axios.post("/api/v1/post/new/ai", postData, config);
+
+        dispatch({
+            type: NEW_POST_SUCCESS,
+            payload: data,
+        });
+
+    } catch (error) {
+        dispatch({
+            type: NEW_POST_FAIL,
+            payload: error.response.data.message,
+        });
+    }
+}
+
+// Generate AI Suggestions
+export const generateAISuggestions = (imageUrl, context) => async (dispatch) => {
+    try {
+        dispatch({ type: AI_SUGGESTIONS_REQUEST });
+        
+        const config = { headers: { "Content-Type": "application/json" } };
+        const { data } = await axios.post("/api/v1/ai/suggestions", { imageUrl, context }, config);
+
+        dispatch({
+            type: AI_SUGGESTIONS_SUCCESS,
+            payload: data,
+        });
+
+        return data;
+
+    } catch (error) {
+        dispatch({
+            type: AI_SUGGESTIONS_FAIL,
+            payload: error.response?.data?.message || "Failed to generate AI suggestions",
+        });
+        throw error;
+    }
+};
+
+// Generate AI Hashtags
+export const generateAIHashtags = (imageUrl, keywords) => async (dispatch) => {
+    try {
+        const config = { headers: { "Content-Type": "application/json" } };
+        const { data } = await axios.post("/api/v1/ai/hashtags", { imageUrl, keywords }, config);
+        return data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+// Generate AI Captions
+export const generateAICaptions = (imageUrl, tone, context) => async (dispatch) => {
+    try {
+        const config = { headers: { "Content-Type": "application/json" } };
+        const { data } = await axios.post("/api/v1/ai/caption", { imageUrl, tone, context }, config);
+        return data;
+    } catch (error) {
+        throw error;
+    }
+};
 
 // Get Post of Followings
 export const getPostsOfFollowing = (page = 1) => async (dispatch) => {

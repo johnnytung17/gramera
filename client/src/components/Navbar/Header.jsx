@@ -3,6 +3,7 @@ import { exploreOutline, homeFill, homeOutline, likeFill, likeOutline, messageFi
 import { Link, useLocation } from 'react-router-dom';
 import ProfileDetails from './ProfileDetails';
 import NewPost from './NewPost';
+import NewPostWithAI from './NewPostWithAI';
 import { useSelector } from 'react-redux';
 import SearchBox from './SearchBar/SearchBox';
 import { ClickAwayListener } from '@mui/material';
@@ -14,6 +15,8 @@ const Header = () => {
 
     const [profileToggle, setProfileToggle] = useState(false)
     const [newPost, setNewPost] = useState(false);
+    const [newPostWithAI, setNewPostWithAI] = useState(false);
+    const [showPostOptions, setShowPostOptions] = useState(false);
 
     const location = useLocation();
     const [onHome, setOnHome] = useState(false);
@@ -47,7 +50,33 @@ const Header = () => {
 
                     <Link to="/direct/inbox">{onChat ? messageFill : messageOutline}</Link>
 
-                    <div onClick={() => setNewPost(true)} className="cursor-pointer">{postUploadOutline}</div>
+                    <div className="relative">
+                        <div onClick={() => setShowPostOptions(!showPostOptions)} className="cursor-pointer">{postUploadOutline}</div>
+                        
+                        {showPostOptions && (
+                            <div className="absolute right-0 top-8 bg-white rounded-lg shadow-lg border py-2 w-48 z-50">
+                                <div 
+                                    onClick={() => {
+                                        setNewPost(true);
+                                        setShowPostOptions(false);
+                                    }}
+                                    className="px-4 py-2 hover:bg-gray-50 cursor-pointer flex items-center gap-3"
+                                >
+                                    📸 <span>Create Post</span>
+                                </div>
+                                <div 
+                                    onClick={() => {
+                                        setNewPostWithAI(true);
+                                        setShowPostOptions(false);
+                                    }}
+                                    className="px-4 py-2 hover:bg-gray-50 cursor-pointer flex items-center gap-3 border-t"
+                                >
+                                    <span className="text-purple-600">✨ Create with AI</span>
+                                    <span className="text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full">BETA</span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     <span className="hidden sm:block">{exploreOutline}</span>
                     <span className="hidden sm:block">{likeOutline}</span>
@@ -60,6 +89,12 @@ const Header = () => {
                 }
 
                 <NewPost newPost={newPost} setNewPost={setNewPost} />
+                <NewPostWithAI newPost={newPostWithAI} setNewPost={setNewPostWithAI} />
+
+                {/* Click away listener for post options */}
+                {showPostOptions && (
+                    <div className="fixed inset-0 z-40" onClick={() => setShowPostOptions(false)} />
+                )}
 
             </div>
         </nav>

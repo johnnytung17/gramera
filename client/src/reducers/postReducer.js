@@ -1,4 +1,38 @@
-import { CLEAR_ERRORS, DELETE_POST_FAIL, DELETE_POST_REQUEST, DELETE_POST_RESET, DELETE_POST_SUCCESS, LIKE_UNLIKE_POST_FAIL, LIKE_UNLIKE_POST_REQUEST, LIKE_UNLIKE_POST_RESET, LIKE_UNLIKE_POST_SUCCESS, NEW_COMMENT_FAIL, NEW_COMMENT_REQUEST, NEW_COMMENT_RESET, NEW_COMMENT_SUCCESS, NEW_POST_FAIL, NEW_POST_REQUEST, NEW_POST_RESET, NEW_POST_SUCCESS, POST_DETAILS_FAIL, POST_DETAILS_REQUEST, POST_DETAILS_RESET, POST_DETAILS_SUCCESS, POST_FOLLOWING_FAIL, POST_FOLLOWING_REQUEST, POST_FOLLOWING_RESET, POST_FOLLOWING_SUCCESS, SAVE_UNSAVE_POST_FAIL, SAVE_UNSAVE_POST_REQUEST, SAVE_UNSAVE_POST_RESET, SAVE_UNSAVE_POST_SUCCESS } from "../constants/postConstants";
+import { 
+    CLEAR_ERRORS, 
+    DELETE_POST_FAIL, 
+    DELETE_POST_REQUEST, 
+    DELETE_POST_RESET, 
+    DELETE_POST_SUCCESS, 
+    LIKE_UNLIKE_POST_FAIL, 
+    LIKE_UNLIKE_POST_REQUEST, 
+    LIKE_UNLIKE_POST_RESET, 
+    LIKE_UNLIKE_POST_SUCCESS, 
+    NEW_COMMENT_FAIL, 
+    NEW_COMMENT_REQUEST, 
+    NEW_COMMENT_RESET, 
+    NEW_COMMENT_SUCCESS, 
+    NEW_POST_FAIL, 
+    NEW_POST_REQUEST, 
+    NEW_POST_RESET, 
+    NEW_POST_SUCCESS, 
+    POST_DETAILS_FAIL, 
+    POST_DETAILS_REQUEST, 
+    POST_DETAILS_RESET, 
+    POST_DETAILS_SUCCESS, 
+    POST_FOLLOWING_FAIL, 
+    POST_FOLLOWING_REQUEST, 
+    POST_FOLLOWING_RESET, 
+    POST_FOLLOWING_SUCCESS, 
+    SAVE_UNSAVE_POST_FAIL, 
+    SAVE_UNSAVE_POST_REQUEST, 
+    SAVE_UNSAVE_POST_RESET, 
+    SAVE_UNSAVE_POST_SUCCESS,
+    AI_SUGGESTIONS_REQUEST,
+    AI_SUGGESTIONS_SUCCESS,
+    AI_SUGGESTIONS_FAIL,
+    AI_SUGGESTIONS_RESET
+} from "../constants/postConstants";
 
 
 // New Post Reducer
@@ -230,6 +264,45 @@ export const postDetailsReducer = (state = {}, { type, payload }) => {
             return {
                 loading: false,
                 post: {}
+            };
+        case CLEAR_ERRORS:
+            return {
+                ...state,
+                error: null,
+            };
+        default:
+            return state;
+    }
+}
+
+// AI Suggestions Reducer
+export const aiSuggestionsReducer = (state = { suggestions: null }, { type, payload }) => {
+    switch (type) {
+        case AI_SUGGESTIONS_REQUEST:
+            return {
+                ...state,
+                loading: true,
+            };
+        case AI_SUGGESTIONS_SUCCESS:
+            return {
+                loading: false,
+                success: payload.success,
+                suggestions: payload.suggestions,
+                usingFallback: payload.usingFallback
+            };
+        case AI_SUGGESTIONS_FAIL:
+            return {
+                ...state,
+                loading: false,
+                error: payload,
+            };
+        case AI_SUGGESTIONS_RESET:
+            return {
+                suggestions: null,
+                loading: false,
+                success: false,
+                error: null,
+                usingFallback: false
             };
         case CLEAR_ERRORS:
             return {

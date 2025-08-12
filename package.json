@@ -1,12 +1,20 @@
 {
-  "name": "instagram",
+  "name": "gramera",
   "version": "1.0.0",
-  "description": "Full Stack Instagram Social Media App",
+  "description": "Full Stack Gramera Social Media App",
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
+    "dev-mock": "nodemon server-mock.js",
     "start": "node server.js",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false && npm install --prefix frontend && npm run build --prefix frontend"
+    "test-db": "node test-connection.js",
+    "diagnose-ssl": "node diagnose-ssl.js",
+    "analyze-connection": "node analyze-connection.js",
+    "setup-mongodb": "node setup-mongodb.js",
+    "quick-setup": "node quick-setup.js",
+    "setup": "npm install && cd client && npm install",
+    "build": "cd client && npm run build",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false && npm install --prefix client && npm run build --prefix client"
   },
   "author": "Jigar Sable",
   "license": "ISC",
@@ -24,6 +32,7 @@
     "mongoose": "^6.1.7",
     "multer": "^2.0.1",
     "multer-s3": "^2.10.0",
+    "openai": "^5.12.2",
     "socket.io": "^4.4.1"
   }
 }
