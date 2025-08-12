@@ -8,8 +8,9 @@ import { Picker } from 'emoji-mart'
 import ScrollToBottom from 'react-scroll-to-bottom';
 import axios from 'axios';
 import moment from 'moment';
+import AIInsights from './AIInsights';
 
-const PostItem = ({ _id, caption, likes, comments, image, postedBy, savedBy, createdAt, setUsersDialog, setUsersList }) => {
+const PostItem = ({ _id, caption, likes, comments, image, postedBy, savedBy, createdAt, setUsersDialog, setUsersList, aiSuggestions, usedAiSuggestion }) => {
 
     const dispatch = useDispatch();
     const commentInput = useRef(null);

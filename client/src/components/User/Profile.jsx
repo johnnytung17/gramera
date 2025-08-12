@@ -96,7 +96,7 @@ const Profile = () => {
 
     return (
         <>
-            <MetaData title={`${user?.name} (@${user?.username}) • Instagram photos and videos`} />
+            <MetaData title={`${user?.name} (@${user?.username}) • Gramera photos and videos`} />
 
             {loading && <BackdropLoader />}
             {user ?
