@@ -4,8 +4,9 @@ const multerS3 = require('multer-s3');
 const path = require('path');
 
 const s3Config = new aws.S3({
-    accessKeyId: process.env.AWS_IAM_USER_KEY,
-    secretAccessKey: process.env.AWS_IAM_USER_SECRET,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION,
     Bucket: process.env.AWS_BUCKET_NAME
 });
 
@@ -38,14 +39,14 @@ const postS3Config = multerS3({
 exports.uploadAvatar = multer({
     storage: avatarS3Config,
     limits: {
-        fileSize: 1024 * 1024 * 5
+        fileSize: 1024 * 1024 * 50 // 50MB limit
     }
 });
 
 exports.uploadPost = multer({
     storage: postS3Config,
     limits: {
-        fileSize: 1024 * 1024 * 5
+        fileSize: 1024 * 1024 * 50 // 50MB limit
     }
 });
 

@@ -37,6 +37,43 @@ const postSchema = new mongoose.Schema({
             ref: "User",
         }
     ],
+    // AI-generated content suggestions
+    aiSuggestions: {
+        captions: [{
+            type: String,
+            trim: true
+        }],
+        hashtags: [{
+            type: String,
+            trim: true
+        }],
+        description: {
+            type: String,
+            trim: true
+        },
+        mood: {
+            type: String,
+            trim: true
+        },
+        colors: [{
+            type: String,
+            trim: true
+        }],
+        suggestions: {
+            bestTimeToPost: String,
+            audienceType: String,
+            engagementTips: String
+        },
+        generatedAt: {
+            type: Date,
+            default: Date.now
+        }
+    },
+    // Track if AI suggestions were used
+    usedAiSuggestion: {
+        type: Boolean,
+        default: false
+    },
     createdAt: {
         type: Date,
         default: Date.now,

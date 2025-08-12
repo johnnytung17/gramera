@@ -1,5 +1,5 @@
 # Gramera - Instagram MERN Clone
-Full-Stack Instagram Clone using MERN Stack and Socket.IO
+Full-Stack Gramera Social Media App using MERN Stack and Socket.IO
 
 ## 🖥️ Tech Stack
 **Frontend:**
@@ -45,6 +45,13 @@ Full-Stack Instagram Clone using MERN Stack and Socket.IO
 - 💬 Commenting on Posts for Interaction
 - 📌 Save/Unsave Posts for Bookmarking
 - 📤 Effortless Post-Sharing Functionality
+
+**🤖 OpenAI GPT-4o Vision Integration**
+- AI Caption Generation: Generate creative captions based on image content
+- Smart Hashtag Suggestions: AI-powered hashtag recommendations
+- Image Analysis: Automatic mood, color, and content detection
+- Accessibility: AI-generated image descriptions
+- Engagement Optimization: Best posting time and audience suggestions
 
 **Messaging System**
 - 🔍 User-Friendly Search for Chat Participants

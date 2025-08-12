@@ -3,6 +3,7 @@ const User = require('../models/userModel');
 const catchAsync = require('../middlewares/catchAsync');
 const ErrorHandler = require('../utils/errorHandler');
 const { deleteFile } = require('../utils/awsFunctions');
+const { generateImageSuggestions, generateHashtagsOnly, generateCaptionOnly } = require('../utils/openaiVision');
 
 // Create New Post
 exports.newPost = catchAsync(async (req, res, next) => {
@@ -229,5 +230,164 @@ exports.allPosts = catchAsync(async (req, res, next) => {
 
     return res.status(200).json({
         posts
+    });
+});
+
+// Generate AI Suggestions for Image
+exports.generateAISuggestions = catchAsync(async (req, res, next) => {
+    const { imageUrl, context, userKeywords } = req.body;
+
+    console.log('🔍 AI Request received:', {
+        hasImageUrl: !!imageUrl,
+        imageUrlType: imageUrl?.startsWith('data:image/') ? 'base64' : 'url',
+        imageUrlLength: imageUrl?.length,
+        context: context,
+        userKeywords: userKeywords
+    });
+
+    if (!imageUrl) {
+        return next(new ErrorHandler("Image URL is required", 400));
+    }
+
+    try {
+        const aiSuggestions = await generateImageSuggestions(imageUrl, context);
+
+        if (!aiSuggestions.success) {
+            console.log('⚠️ AI suggestions failed, using fallback');
+            return res.status(200).json({
+                success: true,
+                message: "AI suggestions generated with fallback",
+                suggestions: aiSuggestions.fallback,
+                usingFallback: true
+            });
+        }
+
+        console.log('✅ AI suggestions generated successfully');
+        return res.status(200).json({
+            success: true,
+            message: "AI suggestions generated successfully",
+            suggestions: aiSuggestions.data,
+            usingFallback: false
+        });
+
+    } catch (error) {
+        console.error('❌ AI Suggestion Error:', error);
+        return next(new ErrorHandler("Failed to generate AI suggestions", 500));
+    }
+});
+
+// Generate Hashtags Only
+exports.generateHashtags = catchAsync(async (req, res, next) => {
+    const { imageUrl, keywords } = req.body;
+
+    if (!imageUrl) {
+        return next(new ErrorHandler("Image URL is required", 400));
+    }
+
+    try {
+        const hashtagResult = await generateHashtagsOnly(imageUrl, keywords);
+
+        if (!hashtagResult.success) {
+            return res.status(200).json({
+                success: true,
+                message: "Hashtags generated with fallback",
+                hashtags: hashtagResult.fallback,
+                usingFallback: true
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Hashtags generated successfully", 
+            hashtags: hashtagResult.hashtags,
+            usingFallback: false
+        });
+
+    } catch (error) {
+        console.error('Hashtag Generation Error:', error);
+        return next(new ErrorHandler("Failed to generate hashtags", 500));
+    }
+});
+
+// Generate Caption Only
+exports.generateCaption = catchAsync(async (req, res, next) => {
+    const { imageUrl, tone, context } = req.body;
+
+    if (!imageUrl) {
+        return next(new ErrorHandler("Image URL is required", 400));
+    }
+
+    try {
+        const captionResult = await generateCaptionOnly(imageUrl, tone || 'casual', context);
+
+        if (!captionResult.success) {
+            return res.status(200).json({
+                success: true,
+                message: "Captions generated with fallback",
+                captions: captionResult.fallback,
+                usingFallback: true
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Captions generated successfully",
+            captions: captionResult.captions,
+            usingFallback: false
+        });
+
+    } catch (error) {
+        console.error('Caption Generation Error:', error);
+        return next(new ErrorHandler("Failed to generate captions", 500));
+    }
+});
+
+// Create New Post with AI Suggestions (Enhanced)
+exports.newPostWithAI = catchAsync(async (req, res, next) => {
+    const { caption, generateAI, useAISuggestion, context } = req.body;
+    
+    const postData = {
+        caption: caption,
+        image: req.file.location,
+        postedBy: req.user._id,
+        usedAiSuggestion: useAISuggestion === 'true' || useAISuggestion === true
+    };
+
+    // Generate AI suggestions if requested
+    if (generateAI === 'true' || generateAI === true) {
+        try {
+            const aiSuggestions = await generateImageSuggestions(req.file.location, context);
+            
+            if (aiSuggestions.success) {
+                postData.aiSuggestions = {
+                    ...aiSuggestions.data,
+                    generatedAt: new Date()
+                };
+            }
+        } catch (error) {
+            console.error('AI Generation Error during post creation:', error);
+            // Continue without AI suggestions if there's an error
+        }
+    }
+
+    const post = await Post.create(postData);
+
+    const user = await User.findById(req.user._id);
+    user.posts.push(post._id);
+    await user.save();
+
+    // Populate the post before sending response
+    const populatedPost = await Post.findById(post._id)
+        .populate("postedBy likes")
+        .populate({
+            path: 'comments',
+            populate: {
+                path: 'user'
+            }
+        });
+
+    res.status(201).json({
+        success: true,
+        post: populatedPost,
     });
 });
